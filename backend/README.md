@@ -22,7 +22,7 @@ A continuación una vista de alto nivel del sistema, en donde mostramos cómo in
 
 El objetivo es alinear al equipo sobre los límites del sistema y sus interacciones clave.
 
-![Diagrama de Contexto](backend/imagenes/1.2.%20Diagrama%20de%20contexto.png)
+![Diagrama de Contexto](imagenes/1.2.%20Diagrama%20de%20contexto.png)
 
 #### Entradas:
 - Eventos desde dispositivos IoT/GPS en vehículos
@@ -113,7 +113,7 @@ A su vez se identifican y se establecen formalmente restricciones técnicas.
 
 ### Diagrama de Paquetes
 Se realiza una modularización de la feature asignada dando como resultado esta vista:
-![Diagrama de Paquetes](backend/imagenes/4.%20Vista%20de%20Paquetes.png)
+![Diagrama de Paquetes](imagenes/4.%20Vista%20de%20Paquetes.png)
 
 ### Descripción de Paquetes principales
 - `controller`: Expone las APIs REST para acceso de los clientes y/o desde el frontend.
@@ -140,7 +140,7 @@ Se realiza una modularización de la feature asignada dando como resultado esta 
 Con la vista de paquetes creada, se procede a identificar los componentes de cada uno. Para simplificar, en el diagrama se muestra un componente que representa al resto de componentes.
 
 La vista obtenida es la siguiente:
-![Diagrama de Componentes](backend/imagenes/5.%20Vista%20de%20Componentes.png)
+![Diagrama de Componentes](imagenes/5.%20Vista%20de%20Componentes.png)
 
 ### Responsabilidades de los principales componentes:
 - **API Gateway**: Gestiona las solicitudes de entrada, actuando como punto central para redirigir las peticiones a los controladores apropiados, aplicar políticas de seguridad, y manejar errores globalmente.
@@ -184,7 +184,7 @@ La vista obtenida es la siguiente:
 ### Diagrama de Despliegue
 En nuestro escenario (en el que el Frontend será desplegado en Vercel, el Backend en Render, y la Base de Datos en Supabase), el siguiente diagrama de despliegue muestra los los servicios en la nube a usar, elementos que hacen parte y protocolos de comunicación que se utilizarán los diferentes componentes.
 
-![Diagrama de Despliegue](backend/imagenes/6.%20Vista%20de%20Despliegue.png)
+![Diagrama de Despliegue](imagenes/6.%20Vista%20de%20Despliegue.png)
 
 ### Tecnologías Previstas
 - Vercel como **cloud platform as a service** para desplegar el frontend.
