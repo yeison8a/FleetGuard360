@@ -214,6 +214,14 @@ POST /api/login
 POST /api/register
 ````
 
+#### 📄 Gestión de Tipos de Alertas
+
+```http
+GET    /api/tipeAlerts
+POST   /api/tipeAlerts
+DELETE /api/tipeAlerts/{id}
+```
+
 ---
 ## ▶️ ¿Cómo Ejecutar el Proyecto?
 
