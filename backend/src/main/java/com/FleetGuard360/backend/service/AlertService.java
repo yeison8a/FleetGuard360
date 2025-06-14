@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,6 +28,14 @@ public class AlertService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    public Alert getAlertById(UUID id) {
+        return alertRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Alerta no encontrada con ID: " + id));
+    }
 
     public List<AlertResponse> getAllAlerts() {
         List<Alert> alerts = alertRepository.findAll();
@@ -52,7 +61,7 @@ public class AlertService {
         Alert alert = new Alert();
         alert.setMensaje(request.getMensaje());
         alert.setPrioridad(request.getPrioridad());
-        alert.setFecha(request.getFecha());
+        alert.setFecha(LocalDateTime.now());
         alert.setResponsables(request.getResponsables());
         alert.setConductor(request.getConductor());
         alert.setPlacaTransporte(request.getPlacaTransporte());
@@ -74,7 +83,13 @@ public class AlertService {
             alert.setVehiculoId(request.getVehiculoId());
         }
 
-        return alertRepository.save(alert);
+       Alert savedAlert = alertRepository.save(alert);
+
+       if (savedAlert.getGeneradaPor() != null) {
+           notificationService.enviarNotificacionPorCorreo(savedAlert, savedAlert.getGeneradaPor());
+       }
+
+       return savedAlert;
     }
 
     public void deleteAlert(UUID id) {
@@ -84,21 +99,52 @@ public class AlertService {
         alertRepository.deleteById(id);
     }
 
+    public Alert updateAlert(UUID id, AlertRequest request) {
+        Alert alert = alertRepository.findById(id)
+                .orElseThrow(() -> new AlertNotFoundException("Alerta no encontrada"));
+
+        alert.setMensaje(request.getMensaje());
+        alert.setPrioridad(request.getPrioridad());
+        alert.setFecha(LocalDateTime.now());
+        alert.setResponsables(request.getResponsables());
+        alert.setConductor(request.getConductor());
+        alert.setPlacaTransporte(request.getPlacaTransporte());
+        alert.setUbicacion(request.getUbicacion());
+
+        if (request.getTipoAlerta() != null) {
+            TipeAlert tipeAlert = tipeAlertRepository.findById(request.getTipoAlerta())
+                    .orElseThrow(() -> new TipeAlertNotFoundException("Tipo de alerta no encontrada"));
+            alert.setTipeAlert(tipeAlert);
+        }
+
+        if (request.getGeneradaPor() != null) {
+            User user = userRepository.findById(request.getGeneradaPor())
+                    .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+            alert.setGeneradaPor(user);
+        }
+
+        if (request.getVehiculoId() != null) {
+            alert.setVehiculoId(request.getVehiculoId());
+        }
+
+        return alertRepository.save(alert);
+    }
+
     public static class AlertNotFoundException extends RuntimeException {
         public AlertNotFoundException(String message) {
             super(message);
         }
     }
 
-        public static class TipeAlertNotFoundException extends RuntimeException {
-            public TipeAlertNotFoundException(String message) {
-                super(message);
-            }
+    public static class TipeAlertNotFoundException extends RuntimeException {
+        public TipeAlertNotFoundException(String message) {
+            super(message);
         }
+    }
 
-        public static class UserNotFoundException extends RuntimeException {
-            public UserNotFoundException(String message) {
-                super(message);
-            }
+    public static class UserNotFoundException extends RuntimeException {
+        public UserNotFoundException(String message) {
+            super(message);
         }
+    }
 }

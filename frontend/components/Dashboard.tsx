@@ -1,4 +1,7 @@
 'use client'
+
+import { useRouter } from "next/navigation";
+
 import React, {SVGProps, useEffect, useState} from "react";
 import {
   Table,
@@ -243,7 +246,6 @@ export default function AlertasTable() {
   }, [page, filteredItems, rowsPerPage]);
 
 const sortedItems = React.useMemo(() => {
-  // Definimos el tipo explícito para priorityOrder
   const priorityOrder: Record<string, number> = { 
     ALTA: 3, 
     MEDIA: 2, 
@@ -251,16 +253,13 @@ const sortedItems = React.useMemo(() => {
   };
 
   return [...items].sort((a: Alerta, b: Alerta) => {
-    // Orden especial para fechas
     if (sortDescriptor.column === "fecha") {
       const dateA = new Date(a.fecha).getTime();
       const dateB = new Date(b.fecha).getTime();
       return sortDescriptor.direction === "descending" ? dateB - dateA : dateA - dateB;
     }
 
-    // Orden especial para prioridad (ALTA > MEDIA > BAJA)
     if (sortDescriptor.column === "prioridad") {
-      // Usamos el operador de coalescencia nula para valores desconocidos
       const aPriority = priorityOrder[a.prioridad] ?? 0;
       const bPriority = priorityOrder[b.prioridad] ?? 0;
       
@@ -269,7 +268,6 @@ const sortedItems = React.useMemo(() => {
         : aPriority - bPriority;
     }
 
-    // Ordenamiento estándar para otras columnas
     const aValue = a[sortDescriptor.column as keyof Alerta];
     const bValue = b[sortDescriptor.column as keyof Alerta];
     
@@ -283,6 +281,29 @@ const sortedItems = React.useMemo(() => {
     const date = new Date(dateString);
     return date.toLocaleString(); 
   };
+
+const handleEdit = (id: string) => {
+  router.push(`/edit/${id}`);
+};
+
+const handleDelete = async (id: string) => {
+  const confirmDelete = window.confirm('¿Estás seguro de que deseas eliminar esta alerta?');
+  if (!confirmDelete) return;
+
+  try {
+    const response = await fetch(`http://localhost:8080/api/alerts/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) throw new Error('Error al eliminar la alerta');
+
+    setAlertas((prev) => prev.filter((alerta) => alerta.id !== id));
+
+  } catch (err) {
+    alert('Hubo un error al eliminar la alerta');
+    console.error(err);
+  }
+};
 
   const renderCell = React.useCallback((alerta: Alerta, columnKey: React.Key) => {
     const cellValue = alerta[columnKey as keyof Alerta];
@@ -311,9 +332,8 @@ const sortedItems = React.useMemo(() => {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem key="view">View</DropdownItem>
-                <DropdownItem key="assign">Edit</DropdownItem>
-                <DropdownItem key="resolve">Delete</DropdownItem>
+                <DropdownItem key="edit" onClick={() => handleEdit(alerta.id)}>Editar</DropdownItem>
+                <DropdownItem key="delete" onClick={() => handleDelete(alerta.id)}>Eliminar</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -353,6 +373,14 @@ const sortedItems = React.useMemo(() => {
     setFilterValue("");
     setPage(1);
   }, []);
+
+
+const router = useRouter();
+
+const handleNuevaAlerta = () => {
+  router.push('/alert'); 
+};
+
 
   const topContent = React.useMemo(() => {
     return (
@@ -410,8 +438,8 @@ const sortedItems = React.useMemo(() => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
-              Nueva Alerta
+            <Button color="primary" endContent={<PlusIcon />} onClick={handleNuevaAlerta}>
+              Nueva alerta
             </Button>
           </div>
         </div>

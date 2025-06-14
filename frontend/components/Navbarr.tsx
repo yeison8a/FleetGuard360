@@ -1,9 +1,16 @@
-'use client'
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@heroui/react";
-import { useAuth } from "@/app/context/AuthContext";
+'use client';
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Link,
+  Button,
+} from '@heroui/react';
+import { useAuth } from '@/app/context/AuthContext';
 import logo from '../app/LogoFeet.png';
-import Image from "next/image";
-import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 
 export const AcmeLogo = () => {
   return (
@@ -19,13 +26,20 @@ export const AcmeLogo = () => {
 };
 
 export default function Navbarr() {
-const { isLoggedIn, logout } = useAuth();
-const router = useRouter();
+  const { isLoggedIn, logout } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname(); 
 
   const handleLogout = () => {
     logout();
-    router.push('/login'); //redirige al login después de cerrar sesión
+    router.push('/login');
   };
+
+  const goToDashboard = () => {
+    router.push('/dashboard');
+  };
+
+  const showGoToDashboard = isLoggedIn && pathname !== '/dashboard';
 
   return (
     <Navbar>
@@ -33,24 +47,23 @@ const router = useRouter();
         <Image
           src={logo}
           alt="FleetGuard360 Logo"
-          width={48}  
-          height={48} 
+          width={48}
+          height={48}
           className="rounded"
         />
-
         <p className="font-bold text-inherit">FG360</p>
       </NavbarBrand>
+
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-
-        </NavbarItem>
-        <NavbarItem isActive>
-
-        </NavbarItem>
-        <NavbarItem>
-
-        </NavbarItem>
+        {showGoToDashboard && (
+          <NavbarItem>
+            <Button variant="ghost" onClick={goToDashboard}>
+              Lista alertas
+            </Button>
+          </NavbarItem>
+        )}
       </NavbarContent>
+
       <NavbarContent justify="end">
         <NavbarItem>
           {!isLoggedIn ? (

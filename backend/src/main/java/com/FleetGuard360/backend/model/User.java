@@ -1,5 +1,6 @@
 package com.FleetGuard360.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class User implements UserDetails {
     private String nombre;
     @Column(unique = true)
     private String correo;
+    @JsonIgnore
     private String contrasena;
     @Enumerated(EnumType.STRING)
     private Role rol;

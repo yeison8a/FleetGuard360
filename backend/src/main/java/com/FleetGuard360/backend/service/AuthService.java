@@ -33,11 +33,12 @@ public class AuthService {
             throw new AuthException("Correo o contraseña incorrectos");
         }
 
-        UserDetails user = userRepository.findByCorreo(request.getCorreo())
+        User user = userRepository.findByCorreo(request.getCorreo())
                 .orElseThrow(() -> new AuthException("Correo no encontrado"));
         String token=jwtService.getToken(user);
         return AuthResponse.builder()
                 .token(token)
+                .usuario(user)
                 .build();
     }
 

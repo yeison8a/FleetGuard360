@@ -8,7 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  const { setIsLoggedIn } = useAuth();
+  const { setIsLoggedIn, setUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,10 +30,11 @@ export default function Login() {
 
       // Guarda el token en localStorage
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.usuario));
 
       setIsLoggedIn(true);
+      setUser(data.usuario);
 
-      // Redirige al dashboard
       router.push('/dashboard');
     } catch (err) {
         console.log(err);
